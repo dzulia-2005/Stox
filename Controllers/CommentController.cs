@@ -42,18 +42,7 @@ public class CommentController : ControllerBase
 
         return Ok(comment.ToCommentDto());
     }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCommentByIdAsync([FromRoute] int id)
-    {
-        var comment = await _commentRepo.DeleteByIdAsync(id);
-        if (comment == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(comment.ToCommentDto());
-    }
+    
 
     [HttpPost("{stockId}")]
     public async Task<IActionResult> AddCommentAsync([FromRoute] int stockId,CreateCommentDto commentDto)
@@ -79,5 +68,17 @@ public class CommentController : ControllerBase
         }
 
         return Ok(comment.ToCommentDto());
+    }
+
+    [HttpDelete("{Id}")]
+    public async Task<IActionResult> DeleteCommentAsync([FromRoute] int Id)
+    {
+        var comment = await _commentRepo.DeleteAsync(Id);
+        if (comment == null)
+        {
+            return NotFound("comment not found");
+        }
+
+        return NoContent();
     }
 }
