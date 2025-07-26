@@ -13,6 +13,7 @@ namespace api.Controllers;
 
 public class CommentController : ControllerBase
 {
+    
     private readonly ICommentRepository _commentRepo;
     private readonly IStockRepository _stockRepo;
     
@@ -25,13 +26,17 @@ public class CommentController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> getAllComments()
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         var comments = await _commentRepo.GetAllAsync();
         var commentsDto = comments.Select(s => s.ToCommentDto());
 
         return Ok(commentsDto);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> getById([FromRoute] int id)
     {
         var comment = await _commentRepo.GetByIdAsync(id);
@@ -44,7 +49,7 @@ public class CommentController : ControllerBase
     }
     
 
-    [HttpPost("{stockId}")]
+    [HttpPost("{stockId:int}")]
     public async Task<IActionResult> AddCommentAsync([FromRoute] int stockId,CreateCommentDto commentDto)
     {
         if (!await _stockRepo.StockExists(stockId))
@@ -57,7 +62,7 @@ public class CommentController : ControllerBase
         return CreatedAtAction(nameof(getById), new { id = commentModel.Id }, commentModel.ToCommentDto());
     }
 
-    [HttpPut("{Id}")]
+    [HttpPut("{Id:int}")]
     public async Task<IActionResult> UpdateCommentAsync([FromRoute] int Id,[FromBody] UpdateCommentRequestDto commentRequestDto)
     {
         var comment = await _commentRepo.UpdateAsync(Id, commentRequestDto.ToCommentFromUpdate());
@@ -70,7 +75,7 @@ public class CommentController : ControllerBase
         return Ok(comment.ToCommentDto());
     }
 
-    [HttpDelete("{Id}")]
+    [HttpDelete("{Id:int}")]
     public async Task<IActionResult> DeleteCommentAsync([FromRoute] int Id)
     {
         var comment = await _commentRepo.DeleteAsync(Id);
