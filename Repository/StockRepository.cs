@@ -74,9 +74,19 @@ public class StockRepository : IStockRepository
 
         if (!string.IsNullOrWhiteSpace(query.CompanyName))
         {
-            stock = stock.Where(x => x.CompanyName.Contains(query.CompanyName));
+            stock = stock.Where(x => x.CompanyName.Contains(query.CompanyName)); 
         }
-    
+
+        if (!string.IsNullOrWhiteSpace(query.SortBy))
+        {
+            if (query.SortBy.Equals("Symbol",StringComparison.OrdinalIgnoreCase))
+            {
+                stock = query.IsDescending
+                    ? stock.OrderByDescending(s => s.Symbol)
+                    : stock.OrderBy(s => s.Symbol);
+            }
+        }
+        
         return await stock.ToListAsync();
     }
 
