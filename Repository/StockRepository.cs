@@ -11,12 +11,10 @@ namespace api.Repository;
 public class StockRepository : IStockRepository
 {
     private readonly ApplicationDbContext _context;
-    private readonly IStockRepository _stockRepo;
     
-    public StockRepository(ApplicationDbContext context,IStockRepository stockRepo)
+    public StockRepository(ApplicationDbContext context)
     {
         _context = context;
-        _stockRepo = stockRepo;
     }
 
     public async Task<Stock> CreateAsync(Stock stockModel)
@@ -62,13 +60,17 @@ public class StockRepository : IStockRepository
 
     public async Task<Stock?> GetByIdAsync(int id)
     {
-        return await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Stocks.Include(x=>x.Comments).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<List<Stock>> GetAllAsync()
     {
-        return await _context.Stocks.ToListAsync();
+        return await _context.Stocks.Include(x=>x.Comments).ToListAsync();
     }
 
+    public Task<bool> StockExists(int id)
+    {
+        return _context.Stocks.AnyAsync(x => x.Id == id);
+    }
     
 }

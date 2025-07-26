@@ -15,6 +15,7 @@ public static class StockMappers
             CompanyName = stockModel.CompanyName,
             Purchase = stockModel.Purchase,
             LastDividend = stockModel.LastDividend,
+            Comments = stockModel.Comments.Select(s=>s.ToCommentDto()).ToList()
         };
     }
 
