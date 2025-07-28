@@ -5,6 +5,7 @@ using api.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using api.Mappers;
 using api.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers;
@@ -23,6 +24,7 @@ public class StockController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
     {
         var stock = await _repository.GetAllAsync(query);
