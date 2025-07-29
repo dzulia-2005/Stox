@@ -9,7 +9,7 @@ using Server.Extension;
 namespace api.Controllers;
 
 
-[Route("api/controller")]
+[Route("api/Account")]
 [ApiController]
 
 public class PortfolioController : ControllerBase
@@ -38,7 +38,7 @@ public class PortfolioController : ControllerBase
 
     }
 
-    [HttpPost]
+    [HttpPost("create")]
     [Authorize]
     public async Task<ActionResult> AddPortfolio(string symbol)
     {
@@ -68,8 +68,28 @@ public class PortfolioController : ControllerBase
         {
             return Created();
         }
-        
-        
+    }
+
+    [HttpDelete("delete")]
+    [Authorize]
+
+    public async Task<ActionResult> DeletePortfolio(string symbol)
+    {
+        var username = User.GetUsername();
+        var user = await _userManager.FindByNameAsync(username);
+        var userPortfolio = await _portfolioRepo.GetPortfolio(user);
+
+        var filteredStock = userPortfolio.Where(s => s.Symbol.ToLower()==symbol.ToLower());
+        if (filteredStock.Count() == 1)
+        {
+            await _portfolioRepo.DeleteAsync(user, symbol);
+        }
+        else
+        {
+            return BadRequest("stock not in your portfolio");
+        }
+
+        return Ok();
     }
     
 }
